@@ -1,34 +1,91 @@
-const stats = [
-  { value: "500+", label: "Active Organizations" },
-  { value: "24k+", label: "Users Today" },
-  { value: "32%", label: "Average Wait Reduced" },
-  { value: "1.2M+", label: "AI Predictions" },
-];
+import { useEffect, useState } from "react";
+import api from "../services/api";
 
 function StatsSection() {
+  const [stats, setStats] = useState({
+    hospitals: 0,
+    totalQueue: 0,
+    avgWait: 0,
+  });
+
+  useEffect(() => {
+    loadStats();
+  }, []);
+
+  const loadStats = async () => {
+    try {
+      const res = await api.get("/queues");
+      const queues = res.data.data;
+
+      const hospitals = queues.length;
+
+      const totalQueue = queues.reduce(
+        (sum, q) => sum + Number(q.currentQueue),
+        0
+      );
+
+      const totalWait = queues.reduce(
+        (sum, q) => sum + parseInt(q.estimatedWait),
+        0
+      );
+
+      const avgWait =
+        hospitals > 0
+          ? Math.round(totalWait / hospitals)
+          : 0;
+
+      setStats({
+        hospitals,
+        totalQueue,
+        avgWait,
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
-    <section id="dashboard" className="bg-slate-950 px-6 py-24 text-white lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        <div className="max-w-2xl">
-          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-sky-400">
-            Performance
-          </p>
-          <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-            Measurable improvements for modern service teams
-          </h2>
+    <section className="py-14 bg-gray-100">
+      <div className="max-w-7xl mx-auto px-8">
+
+        <h2 className="text-4xl font-bold text-center mb-10 text-gray-800">
+          Dashboard Overview
+        </h2>
+
+        <div className="grid md:grid-cols-3 gap-8">
+
+          <div className="bg-white rounded-2xl shadow-lg p-8 text-center hover:shadow-2xl transition">
+            <div className="text-5xl mb-4">🏥</div>
+            <h3 className="text-4xl font-bold text-blue-700">
+              {stats.hospitals}
+            </h3>
+            <p className="text-gray-500 mt-2">
+              Total Hospitals
+            </p>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-lg p-8 text-center hover:shadow-2xl transition">
+            <div className="text-5xl mb-4">👥</div>
+            <h3 className="text-4xl font-bold text-green-600">
+              {stats.totalQueue}
+            </h3>
+            <p className="text-gray-500 mt-2">
+              People Waiting
+            </p>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-lg p-8 text-center hover:shadow-2xl transition">
+            <div className="text-5xl mb-4">⏱</div>
+            <h3 className="text-4xl font-bold text-orange-500">
+              {stats.avgWait} min
+            </h3>
+            <p className="text-gray-500 mt-2">
+              Average Wait Time
+            </p>
+          </div>
+
         </div>
 
-        <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-          {stats.map((stat) => (
-            <div
-              key={stat.label}
-              className="rounded-3xl border border-white/10 bg-white/10 p-6 shadow-lg shadow-slate-900/20 backdrop-blur"
-            >
-              <p className="text-3xl font-semibold text-white">{stat.value}</p>
-              <p className="mt-2 text-sm text-slate-300">{stat.label}</p>
-            </div>
-          ))}
-        </div>
       </div>
     </section>
   );

@@ -1,10 +1,18 @@
+import Navbar from "./components/Navbar";
+import HeroSection from "./components/HeroSection";
+import StatsSection from "./components/StatsSection";
+import FeaturesSection from "./components/FeaturesSection";
+import Footer from "./components/Footer";
+
 function App() {
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <h1 className="text-5xl font-bold">
-        SmartQueue AI
-      </h1>
-    </div>
+    <>
+      <Navbar />
+      <HeroSection />
+      <StatsSection />
+      <FeaturesSection />
+      <Footer />
+    </>
   );
 }
 
