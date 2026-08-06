@@ -1,0 +1,9 @@
+{
+  "organization": "Apollo Hospital",
+  "currentQueue": 18,
+  "estimatedWait": "25 minutes",
+  "doctorsAvailable": 6,
+  "hospitalCapacity": 50,
+  "emergencyCases": 2,
+  "averageServiceTime": 12
+}
