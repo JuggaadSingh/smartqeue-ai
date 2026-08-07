@@ -3,6 +3,8 @@ import api from "../services/api";
 import QueueCard from "./QueueCard";
 import EditQueueModal from "./EditQueueModel";
 import AddQueueModal from "./AddQueueModel";
+import AnalyticsDashboard from "./AnalyticsDashboard";
+import HospitalComparison from "./HospitalComparison";
 
 function HeroSection() {
   const [queues, setQueues] = useState([]);
@@ -117,6 +119,44 @@ function HeroSection() {
     return matchesSearch && matchesStatus;
   });
 
+  // ===========================
+// LIVE DASHBOARD STATS
+// ===========================
+
+const totalHospitals = queues.length;
+
+const openHospitals = queues.filter(
+  (q) => q.status === "Open"
+).length;
+
+const totalQueue = queues.reduce(
+  (sum, q) => sum + Number(q.currentQueue || 0),
+  0
+);
+
+const totalDoctors = queues.reduce(
+  (sum, q) => sum + Number(q.doctorsAvailable || 0),
+  0
+);
+
+const emergencyCases = queues.reduce(
+  (sum, q) => sum + Number(q.emergencyCases || 0),
+  0
+);
+
+const averageWait =
+  queues.length > 0
+    ? Math.round(
+        queues.reduce(
+          (sum, q) =>
+            sum +
+            parseInt(q.estimatedWait) ||
+            0,
+          0
+        ) / queues.length
+      )
+    : 0;
+
   return (
     <section className="bg-gradient-to-r from-blue-50 to-indigo-100 py-16 min-h-screen">
       <div className="max-w-7xl mx-auto px-8">
@@ -166,6 +206,88 @@ function HeroSection() {
           </select>
 
         </div>
+
+        {/* ================= Dashboard ================= */}
+
+<div className="grid grid-cols-2 lg:grid-cols-6 gap-5 mb-12">
+
+  <div className="bg-white rounded-2xl shadow-lg p-6 text-center">
+
+    <h3 className="text-gray-500 text-sm">
+      Hospitals
+    </h3>
+
+    <p className="text-4xl font-bold text-blue-600 mt-3">
+      {totalHospitals}
+    </p>
+
+  </div>
+
+  <div className="bg-white rounded-2xl shadow-lg p-6 text-center">
+
+    <h3 className="text-gray-500 text-sm">
+      Open
+    </h3>
+
+    <p className="text-4xl font-bold text-green-600 mt-3">
+      {openHospitals}
+    </p>
+
+  </div>
+
+  <div className="bg-white rounded-2xl shadow-lg p-6 text-center">
+
+    <h3 className="text-gray-500 text-sm">
+      Patients
+    </h3>
+
+    <p className="text-4xl font-bold text-blue-700 mt-3">
+      {totalQueue}
+    </p>
+
+  </div>
+
+  <div className="bg-white rounded-2xl shadow-lg p-6 text-center">
+
+    <h3 className="text-gray-500 text-sm">
+      Emergency
+    </h3>
+
+    <p className="text-4xl font-bold text-red-600 mt-3">
+      {emergencyCases}
+    </p>
+
+  </div>
+
+  <div className="bg-white rounded-2xl shadow-lg p-6 text-center">
+
+    <h3 className="text-gray-500 text-sm">
+      Doctors
+    </h3>
+
+    <p className="text-4xl font-bold text-green-700 mt-3">
+      {totalDoctors}
+    </p>
+
+  </div>
+
+  <div className="bg-white rounded-2xl shadow-lg p-6 text-center">
+
+    <h3 className="text-gray-500 text-sm">
+      Avg Wait
+    </h3>
+
+    <p className="text-4xl font-bold text-orange-600 mt-3">
+      {averageWait}m
+    </p>
+
+  </div>
+
+</div>
+
+<AnalyticsDashboard queues={queues} />
+
+<HospitalComparison queues={queues} />
 
         {/* Queue Cards */}
 
